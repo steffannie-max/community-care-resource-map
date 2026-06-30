@@ -39,73 +39,89 @@
     -webkit-font-smoothing: antialiased;
     padding-bottom: 88px;
   }
-  .container {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-  /* Top bar */
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* Top bar with continuum band */
   .topbar {
     border-bottom: 1px solid var(--rule);
-    background: var(--surface);
-    padding: 20px 0 24px;
-    position: sticky; top: 0; z-index: 30;
-    backdrop-filter: saturate(120%) blur(6px);
     background: rgba(255,255,255,.92);
+    backdrop-filter: saturate(120%) blur(6px);
+    padding: 20px 0 16px;
+    position: sticky; top: 0; z-index: 30;
   }
-  .topbar-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
   .brand h1 {
     font-family: 'Fraunces', Georgia, serif;
     font-weight: 600;
     font-size: clamp(22px, 3.2vw, 30px);
     margin: 0 0 4px;
     letter-spacing: -0.01em;
-    color: var(--ink);
   }
   .brand p { margin: 0; color: var(--ink-subtle); font-size: 14px; }
   .brand .accent { color: var(--phase); transition: color .25s ease; }
 
-  /* Phase tabs */
-  .phase-tabs {
+  /* Continuum band */
+  .continuum-wrap { padding: 22px 0 8px; }
+  .continuum-band { position: relative; }
+  .continuum-track {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right,
+      var(--c-preparedness) 6%,
+      var(--c-early_response) 25%,
+      var(--c-elevated_response) 41%,
+      var(--c-critical_response) 58%,
+      var(--c-recovery) 75%,
+      var(--c-mitigation) 94%);
+    margin: 0 8px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .continuum-stops {
     display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding: 14px 0 4px;
-    margin-top: 8px;
-    scrollbar-width: thin;
+    position: relative;
+    margin-top: -14px;
   }
-  .phase-tabs::-webkit-scrollbar { height: 6px; }
-  .phase-tabs::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
-  .tab {
-    flex: 0 0 auto;
-    padding: 10px 14px;
-    border: 1px solid var(--rule);
-    background: var(--surface);
-    border-radius: 999px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--ink-muted);
+  .stop {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
     cursor: pointer;
-    transition: all .18s ease;
-    display: inline-flex; align-items: center; gap: 8px;
+    font-family: inherit;
+    padding: 0;
   }
-  .tab:hover { border-color: var(--ink-muted); color: var(--ink); }
-  .tab[aria-selected="true"] {
-    background: var(--phase);
-    border-color: var(--phase);
-    color: white;
-    font-weight: 600;
+  .stop .marker {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--c);
+    border: 4px solid var(--bg);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.12);
+    transition: all .25s ease;
   }
-  .tab .dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--tab-color);
-    flex: 0 0 auto;
+  .stop:hover .marker { transform: scale(1.1); }
+  .stop[aria-selected="true"] .marker {
+    width: 26px;
+    height: 26px;
+    border-width: 5px;
+    box-shadow: 0 0 0 2px var(--c), 0 4px 12px rgba(0,0,0,.15);
   }
-  .tab[aria-selected="true"] .dot { background: rgba(255,255,255,.6); }
+  .stop .stop-label {
+    font-size: 11px;
+    margin-top: 8px;
+    color: var(--ink-subtle);
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .stop[aria-selected="true"] .stop-label {
+    color: var(--c);
+    font-weight: 700;
+  }
 
   /* Phase intro */
-  .phase-panel { padding: 32px 0 8px; }
+  .phase-panel { padding: 36px 0 8px; }
   .phase-eyebrow {
     font-size: 12px;
     font-weight: 600;
@@ -119,7 +135,6 @@
     font-weight: 600;
     font-size: clamp(28px, 5vw, 44px);
     margin: 0 0 16px;
-    color: var(--ink);
     letter-spacing: -0.02em;
     line-height: 1.1;
   }
@@ -145,10 +160,8 @@
     flex-wrap: wrap;
   }
   .role-label {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--ink-subtle);
   }
   .role-pills { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -176,12 +189,11 @@
   }
 
   /* Grid */
-  .grid-section h2 {
+  .grid-section h2, .resources-section h2 {
     font-family: 'Fraunces', Georgia, serif;
     font-weight: 500;
     font-size: 22px;
     margin: 0 0 16px;
-    color: var(--ink);
     letter-spacing: -0.01em;
   }
   .grid {
@@ -194,10 +206,7 @@
     overflow: hidden;
     box-shadow: var(--shadow);
   }
-  .grid-cell {
-    background: var(--surface);
-    padding: 16px;
-  }
+  .grid-cell { background: var(--surface); padding: 16px; }
   .grid-cell.head {
     background: var(--phase);
     color: white;
@@ -210,7 +219,6 @@
   .grid-cell.role-head {
     background: var(--phase-soft);
     font-weight: 600;
-    color: var(--ink);
     font-size: 14px;
     display: flex; align-items: center;
   }
@@ -239,13 +247,63 @@
 
   /* Resources */
   .resources-section { margin-top: 56px; }
-  .resources-section h2 {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 500;
-    font-size: 22px;
-    margin: 0 0 16px;
+  .resource-controls {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .resource-controls-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .control > span {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-subtle);
+  }
+  .control select, .control input {
+    font-family: inherit;
+    font-size: 15px;
+    padding: 10px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--surface);
     color: var(--ink);
-    letter-spacing: -0.01em;
+    width: 100%;
+  }
+  .control select:focus, .control input:focus {
+    outline: 2px solid var(--phase);
+    outline-offset: -1px;
+    border-color: var(--phase);
+  }
+  .resource-links {
+    display: flex;
+    gap: 20px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    font-size: 13px;
+  }
+  .resource-links a {
+    color: var(--phase);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+    font-weight: 500;
   }
   .resources {
     background: var(--surface);
@@ -265,7 +323,11 @@
   .resource:last-child { border-bottom: 0; }
   .resource .name { font-weight: 600; color: var(--ink); }
   .resource .contact { color: var(--ink-muted); font-size: 14px; font-variant-numeric: tabular-nums; }
-  .resource .why { color: var(--ink-muted); font-size: 14px; line-height: 1.5; }
+  .resource .why {
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
   .resource .marker {
     display: inline-block;
     width: 6px; height: 6px;
@@ -273,6 +335,24 @@
     background: var(--phase);
     margin-right: 8px;
     vertical-align: middle;
+  }
+  .region-tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--phase);
+    background: var(--phase-soft);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .resource-empty {
+    padding: 36px 20px;
+    text-align: center;
+    color: var(--ink-subtle);
+    font-size: 14px;
   }
 
   /* Sticky crisis footer */
@@ -312,24 +392,22 @@
   /* Mobile */
   @media (max-width: 720px) {
     .container { padding: 0 16px; }
-    .topbar { padding: 14px 0 16px; }
-    .topbar-row { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .phase-tabs { padding-top: 4px; }
+    .topbar { padding: 14px 0 12px; }
+    .continuum-track { margin: 0 4px; }
+    .stop .marker { width: 14px; height: 14px; border-width: 3px; }
+    .stop[aria-selected="true"] .marker { width: 20px; height: 20px; border-width: 4px; }
+    .stop .stop-label { font-size: 9px; margin-top: 6px; }
     .phase-panel { padding: 24px 0 0; }
     .phase-title { font-size: 28px; }
     .phase-paragraph { font-size: 16px; }
-    .grid {
-      grid-template-columns: 1fr;
-    }
+    .grid { grid-template-columns: 1fr; }
     .grid-cell.head { display: none; }
     .grid-cell.role-head {
       padding: 14px 16px;
       border-top: 1px solid var(--rule);
     }
     .grid-cell.role-head:first-of-type { border-top: 0; }
-    .grid-cell.body {
-      padding: 8px 16px 4px;
-    }
+    .grid-cell.body { padding: 8px 16px 4px; }
     .grid-cell.body::before {
       content: attr(data-level);
       display: block;
@@ -343,6 +421,7 @@
     .grid-cell.body:last-of-type { padding-bottom: 16px; }
     .resource { grid-template-columns: 1fr; gap: 6px; padding: 16px; }
     .resource .contact, .resource .why { font-size: 13px; }
+    .resource-controls { padding: 14px; }
     .crisis-bar { padding: 10px 16px; }
     .crisis-inner { gap: 10px; font-size: 13px; }
   }
@@ -355,20 +434,22 @@
     font-size: 13px;
     border-top: 1px solid var(--rule);
   }
-  .footnote a { color: var(--phase); }
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="container">
-    <div class="topbar-row">
-      <div class="brand">
-        <h1>Community Care <span class="accent">Resource Map</span></h1>
-        <p>Six phases of response. Three roles. One companion to the Trauma-Informed De-escalation training series.</p>
+    <div class="brand">
+      <h1>Community Care <span class="accent">Resource Map</span></h1>
+      <p>Six phases of response. Three roles. Statewide Oregon resources with phased context.</p>
+    </div>
+    <div class="continuum-wrap">
+      <div class="continuum-band">
+        <div class="continuum-track"></div>
+        <div class="continuum-stops" id="continuumStops" role="tablist"></div>
       </div>
     </div>
-    <div class="phase-tabs" role="tablist" id="phaseTabs"></div>
   </div>
 </div>
 
@@ -392,15 +473,41 @@
 
   <section class="resources-section">
     <h2>Resources</h2>
+
+    <div class="resource-controls">
+      <div class="resource-controls-row">
+        <label class="control">
+          <span>Resources for</span>
+          <select id="regionSelect">
+            <option value="all">All Oregon</option>
+            <option value="portland">Portland Metro</option>
+            <option value="willamette">Willamette Valley (Salem to Eugene)</option>
+            <option value="southern">Southern Oregon</option>
+            <option value="central">Central Oregon</option>
+            <option value="coast">Oregon Coast</option>
+            <option value="eastern">Eastern Oregon</option>
+          </select>
+        </label>
+        <label class="control">
+          <span>Search resources</span>
+          <input type="search" id="searchInput" placeholder="warmline, walk-in, youth, peer, mobile..." />
+        </label>
+      </div>
+      <div class="resource-links">
+        <a href="https://www.211info.org" target="_blank" rel="noopener">More resources via 211info →</a>
+        <a href="https://www.oregon.gov/oha/ph/preventionwellness/safeliving/suicideprevention/pages/crisislines.aspx" target="_blank" rel="noopener">OHA county crisis lines →</a>
+      </div>
+    </div>
+
     <div class="resources" id="resources"></div>
   </section>
 
-  <div class="footnote" id="footnote">
-    Last reviewed June 2026. Companion to the Trauma-Informed De-escalation training series.
+  <div class="footnote">
+    Last reviewed June 2026. Companion to the Trauma-Informed De-escalation training series. Resources are anchor entries curated for each phase. For the long tail of community resources, use 211info or the OHA county directory above.
   </div>
 </div>
 
-<div class="crisis-bar" role="region" aria-label="Crisis lines">
+<div class="crisis-bar">
   <div class="crisis-inner">
     <span class="crisis-label">In crisis right now</span>
     <a href="tel:5039884888">Multnomah Crisis 503-988-4888</a>
@@ -412,19 +519,58 @@
 </div>
 
 <script>
-const DATA = {"intro": "This map sorts response by where you are on the continuum of care, not by category. Six phases run from before anything happens to after the moment is over and you are looking back to look forward. Each phase tells you what to do at three levels (steadying yourself, steadying others, steadying the system around you) and points to the resources that fit. Click any color tile below to enter that phase. The goal of everything upstream is to reach the red column less often.", "roles": ["Community Member", "Staff", "Leader / Supervisor"], "levels": ["Intrapersonal", "Interpersonal", "Systemic"], "phases": [{"slug": "preparedness", "title": "Preparedness", "color": "#2E7D32", "emoji": "🟢", "paragraph": "Before anything hard happens. This is the steady, ordinary work that makes a harder moment survivable. Know your role and its edges. Know your limits. Build real relationships with the people around you in calm times. Post the numbers somewhere they can be found without searching. Practice the skills your body will need to reach for. Most of what protects people in a crisis was put in place long before the crisis arrived.", "grid": {"Community Member": {"Intrapersonal": "Know what you can carry and what you can not. Build practices your body can reach for under stress: breath, grounding, a walk. Get clear on what counts as too much for you before anything hard hits.", "Interpersonal": "Build real ties with neighbors, family, and friends in calm times. A familiar face slows everyone's nervous system in a hard moment. Know who in your life is steady and who is not.", "Systemic": "Build mutual aid relationships before you need them. Post warmline and mobile crisis numbers on the fridge or in your phone favorites. Share resource lists with your block, your group chat, your faith community."}, "Staff": {"Intrapersonal": "Know your role's edges in writing. Learn what the org expects of you and what it does not. Practice settling your own activation.", "Interpersonal": "Build trust with the people you serve before any hard moment. Steady ties are what make one survivable.", "Systemic": "Familiarize yourself with the org's safety, de-escalation, and emergency policies. Participate in skill-building training."}, "Leader / Supervisor": {"Intrapersonal": "Hold yourself to the standard you set for staff. Your regulation sets the ceiling for theirs.", "Interpersonal": "Identify your team's co-regulators and the staff who hold steadiness for others. Resource them.", "Systemic": "Own the written response plan. Resource the training, staffing, and recovery time. Policy without resources is paper."}}, "resources": [{"name": "Trauma Informed Oregon", "contact": "traumainformedoregon.org", "why": "Training, tools, and frameworks for building trauma-informed practice across roles and systems."}, {"name": "NAYA (Native American Youth & Family Center)", "contact": "nayapdx.org / 503-288-8177", "why": "Culturally specific programs rooted in cultural identity, family, and the Relational Worldview Model."}, {"name": "NARA NW", "contact": "naranorthwest.org / 503-224-1044", "why": "Culturally appropriate behavioral health and wellness for Native and Alaska Native people; open to others in need."}, {"name": "Latino Network", "contact": "latnet.org / 503-283-6881", "why": "Latine-led, culturally specific programs for youth and families."}, {"name": "Marie Equi Center", "contact": "marieequi.center", "why": "Centers trans and queer people. Drop-in peer support and systems navigation for low-income and unhoused LGBTQIA2S+ folks."}, {"name": "Brown Hope", "contact": "brownhope.org", "why": "Power Hour offers community and healing from racial trauma. Parent org of the Black Resilience Fund."}, {"name": "Portland Mutual Aid Network", "contact": "portlandmutualaidnetwork.com", "why": "Food, supplies, and care for unhoused neighbors. Meeting needs early is prevention."}, {"name": "Bystander Intervention training", "contact": "portland.gov (search Bystander Intervention)", "why": "Free trainings on stepping in and reading conflict early, before it climbs."}, {"name": "Rose City Self Defense", "contact": "rosecityselfdefense.com", "why": "Personal and community capacity from a harm-reduction lens, so people feel steadier ahead of time."}]}, {"slug": "early_response", "title": "Early Response", "color": "#F9A825", "emoji": "🟡", "paragraph": "Something is shifting. The room feels different. The person in front of you feels different. Your own body feels different. The situation is still workable. The first move is your own nervous system. Slow down, soften, lower your voice, open your posture. Read what is actually happening before you decide what to do about it. Most of the work in this phase is attunement, not intervention.", "grid": {"Community Member": {"Intrapersonal": "Catch your own activation first. A few slow rounds of breath before you move or speak. Notice if you are about to react from your own old story.", "Interpersonal": "Open with connection, not control. Ask what is needed. Keep your voice low and your stance soft. Avoid lecturing or fixing.", "Systemic": "If it is not yours to carry, pass it on. Lean on your mutual aid network, group threads, or community warmlines. Say out loud who you are calling and why."}, "Staff": {"Intrapersonal": "Settle yourself first. You cannot steady another person while your own alarm is loud.", "Interpersonal": "Read the person, slow the pace, give room, and guard their dignity in front of others.", "Systemic": "Use the agreed word or signal to call a teammate in without heating up the room."}, "Leader / Supervisor": {"Intrapersonal": "Carry the moment with steadiness. People read the room through the person in charge.", "Interpersonal": "Move toward the room, not away. Your presence backs your staff and steadies the people watching.", "Systemic": "Hold the structure. Make sure the response plan is being followed and the right calls are being made."}}, "resources": [{"name": "David Romprey Oregon Warmline", "contact": "1-800-698-2392 (24/7)", "why": "Peer-run line for someone who just needs to talk. Lived-experience support, open to anyone."}, {"name": "YouthLine", "contact": "877-968-8491 or text teen2teen to 839863", "why": "Teen-to-teen support for younger people who may not open up to an adult."}, {"name": "The Trevor Project", "contact": "1-866-488-7386 or text 678678", "why": "Ongoing support for LGBTQ+ youth through age 24."}, {"name": "NAMI Multnomah", "contact": "namimultnomah.org / 503-228-5692", "why": "Culturally specific resource lists to connect people early."}, {"name": "Multnomah County Crisis Line (support and guidance)", "contact": "503-988-4888 (24/7)", "why": "Talk through a rising situation with a counselor before it tips."}]}, {"slug": "elevated_response", "title": "Elevated Response", "color": "#E65100", "emoji": "🟠", "paragraph": "The situation is climbing. Words alone are not steadying it. The work shifts toward safety without abandoning presence. Increase distance, keep your exit accessible, signal a teammate, reduce the audience. Brief, clear language only. No power struggles, no ultimatums, no raised voices. Stay calm in your body so the room has something steady to track.", "grid": {"Community Member": {"Intrapersonal": "Stay in your breath. Increase distance without losing presence. Know your exit before you need it.", "Interpersonal": "Reduce demands. Short, clear sentences. No ultimatums. No power struggles. Do not try to win the moment.", "Systemic": "Signal for backup from your community network. Reduce the audience. Fewer eyes, less heat. Ask others to give space. Use community responders who can arrive faster than 911."}, "Staff": {"Intrapersonal": "Reposition so you have access to an exit. Keep your body language open and your voice low.", "Interpersonal": "Brief, clear, simple language only. Protect the person's dignity even while moving toward safety.", "Systemic": "Activate your call-in protocol. Make the discrete signal. Get a colleague in the room."}, "Leader / Supervisor": {"Intrapersonal": "Hold your own ground. Do not show up activated. Your steady body is part of the intervention.", "Interpersonal": "Back your staff out loud and in front of the person. Take over the lead if your staff member needs to step back.", "Systemic": "Authorize the next steps. Make sure the call path is being followed and the room is being managed."}}, "resources": [{"name": "Project Respond (mobile crisis team)", "contact": "Via 503-988-4888", "why": "Trained clinicians and peers come to the person when activation is rising but the situation is still workable. Not police."}, {"name": "Portland Street Response", "contact": "Via 503-988-4888", "why": "Unarmed responders (paramedic, crisis therapist, community health workers) for calls that do not need police. Citywide."}, {"name": "Cascadia Urgent Walk-In Clinic", "contact": "4212 SE Division St, Portland / 503-238-0737 (Mon-Fri 7am-10:30pm)", "why": "Somewhere to bring a person before things tip into emergency. No appointment, regardless of insurance or income."}, {"name": "Multnomah County Crisis Line", "contact": "503-988-4888 (24/7)", "why": "Talk through a rising situation and request mobile dispatch if needed."}]}, {"slug": "critical_response", "title": "Critical Response", "color": "#B71C1C", "emoji": "🔴", "paragraph": "Safety is at stake right now. This is the last column, not the first move. Activate external support: security, mobile crisis, 911, the org's emergency procedures. Know in advance what the consequences of each call may be for the person in front of you, and choose with that knowledge in hand. Do not intervene physically unless trained and the situation requires it. Once the immediate threat is contained, the work moves to Recovery.", "grid": {"Community Member": {"Intrapersonal": "Move to safety. Get yourself out of the line of harm. You cannot help anyone from inside the crisis.", "Interpersonal": "Do not intervene physically unless trained and the situation requires it. Stay present from a safe distance if you can. Tell others what to do, not what not to do.", "Systemic": "Call your first-call number. Reach community responders or mobile crisis before law enforcement when it is safe to do so. 911 only with awareness of impact for the person in crisis."}, "Staff": {"Intrapersonal": "Protect yourself first. You cannot help anyone from inside the harm.", "Interpersonal": "Give clear, brief direction to others in the room: where to go, what to do.", "Systemic": "Follow your org's emergency response procedures. Call security, mobile crisis, or 911 per protocol. Document what you did and when."}, "Leader / Supervisor": {"Intrapersonal": "Stay clear-headed. Track the room and the decisions being made.", "Interpersonal": "Direct the response. Take over if your staff member is overwhelmed. Make sure no one is left alone.", "Systemic": "Activate the full emergency response. Be in contact with the responders en route. Begin the documentation thread."}}, "resources": [{"name": "Multnomah County Crisis Line", "contact": "503-988-4888 or 1-800-716-9769 (24/7)", "why": "The main number to call instead of 911 for a mental health crisis. Ask for Project Respond by name."}, {"name": "988 Suicide & Crisis Lifeline", "contact": "Call or text 988 (press 2 for Spanish)", "why": "National 24/7 line in many languages. Good for suicidal thoughts or acute crisis."}, {"name": "Washington County Crisis Line", "contact": "503-291-9111 (24/7)", "why": "Same kind of crisis support for people in the western suburbs outside Multnomah County."}, {"name": "Unity Center for Behavioral Health", "contact": "1225 NE 2nd Ave, Portland / 503-944-8000 (24/7)", "why": "Psychiatric emergency room for adults when someone needs a higher level of care than a phone line."}, {"name": "911", "contact": "911", "why": "Life-threatening emergency only. Know the possible consequences for the person in crisis before you call."}]}, {"slug": "recovery", "title": "Recovery", "color": "#1565C0", "emoji": "🔵", "paragraph": "The incident is over. The people are not. Tend to staff and community members one at a time, on their own timeline. Some are ready to talk in an hour, some in a week, some never out loud. Offer more than one door in. Normalize a range of reactions without judgment. Connect people to real supports, not just a flyer. What happens here shapes whether anyone trusts the next response.", "grid": {"Community Member": {"Intrapersonal": "Tend your own body. Sleep, food, breath, slow movement, time off screens. Do not bypass your own recovery to take care of others.", "Interpersonal": "Check on the people who were there with you. Offer more than one door in: a text, a walk, a sit-down. Some are ready in an hour, some in a week, some never out loud.", "Systemic": "Lean on mutual aid, peer support, and warmlines. Tend neighbors who were also affected. Help others find their people."}, "Staff": {"Intrapersonal": "Use the supports the org provides. EAP, peer support, time off. Do not push through.", "Interpersonal": "Check in individually with people who were present. Ask what they needed and what was missing.", "Systemic": "Document what happened. Follow your org's post-incident procedures. Show up for the debrief."}, "Leader / Supervisor": {"Intrapersonal": "Tend your own recovery openly. Staff watch what leaders do, not what they say.", "Interpersonal": "Reach out to community members involved. Offer a facilitated debrief and connection time.", "Systemic": "Run the team debrief. Connect staff and community members to mental health supports. Hold space for a range of reactions without judgment."}}, "resources": [{"name": "David Romprey Oregon Warmline", "contact": "1-800-698-2392 (24/7)", "why": "Peer-run line for processing without being in active crisis."}, {"name": "Brown Hope Power Hour", "contact": "brownhope.org", "why": "Community and healing from racial trauma. Especially relevant for Black, Brown, and Indigenous staff and community."}, {"name": "NAMI Multnomah", "contact": "namimultnomah.org / 503-228-5692", "why": "Culturally specific support groups and resource lists for ongoing processing."}, {"name": "Your Employee Assistance Program (EAP)", "contact": "Check your org's HR or benefits portal", "why": "Short-term counseling and referral, usually at no cost to the employee."}, {"name": "Cascadia Urgent Walk-In Clinic", "contact": "4212 SE Division St, Portland / 503-238-0737", "why": "Same-day support if processing leads back toward crisis."}]}, {"slug": "mitigation", "title": "Mitigation", "color": "#546E7A", "emoji": "⚪", "paragraph": "Look back to look forward. Name what in the environment, the policies, the relationships, or the unmet needs contributed to what happened. Invite the people most impacted into the room where solutions get named. Update what needs updating. Set a review date. Mitigation is care, not blame. It is the difference between a single hard moment and a pattern that keeps repeating.", "grid": {"Community Member": {"Intrapersonal": "Notice what you learned about your own thresholds. Adjust your practices for next time. Be honest about what you can and cannot hold.", "Interpersonal": "Tell people you trust what you noticed. The patterns you see are part of what others miss.", "Systemic": "Bring what you saw to community spaces and orgs if it is safe to do so. Organize with neighbors around the patterns that keep repeating. Ask for the changes you want to see."}, "Staff": {"Intrapersonal": "Take what you learned into your own practice. What worked, what did not, what you want to try differently.", "Interpersonal": "Share what you saw with your team. The patterns you notice are part of the data.", "Systemic": "Participate in the systems review. Bring what you saw on the ground to the policy table."}, "Leader / Supervisor": {"Intrapersonal": "Be honest with yourself about your role in what happened and what could shift.", "Interpersonal": "Invite the people most impacted into the room where solutions get named.", "Systemic": "Identify contributing variables: environment, policies, relationships, unmet needs. Update what needs updating. Set a review date. Resource the changes you commit to."}}, "resources": [{"name": "Trauma Informed Oregon: De-escalation training", "contact": "traumainformedoregon.org", "why": "Companion training series for this map. Use it to ground the systems review."}, {"name": "Feedback and additions", "contact": "Send to your training coordinator", "why": "If you have a resource, a correction, or a pattern you want named, send it forward. This map is meant to keep moving."}]}]};
+const DATA = {"intro": "This map sorts response by where you are on the continuum of care, not by category. Six phases run from before anything happens to after the moment is over and you are looking back to look forward. Each phase tells you what to do at three levels (steadying yourself, steadying others, steadying the system around you) and points to the resources that fit. Click any color tile below to enter that phase. The goal of everything upstream is to reach the red column less often.", "roles": ["Community Member", "Staff", "Leader / Supervisor"], "levels": ["Intrapersonal", "Interpersonal", "Systemic"], "phases": [{"slug": "preparedness", "title": "Preparedness", "color": "#2E7D32", "paragraph": "Before anything hard happens. This is the steady, ordinary work that makes a harder moment survivable. Know your role and its edges. Know your limits. Build real relationships with the people around you in calm times. Post the numbers somewhere they can be found without searching. Practice the skills your body will need to reach for. Most of what protects people in a crisis was put in place long before the crisis arrived.", "grid": {"Community Member": {"Intrapersonal": "Know what you can carry and what you can not. Build practices your body can reach for under stress: breath, grounding, a walk. Get clear on what counts as too much for you before anything hard hits.", "Interpersonal": "Build real ties with neighbors, family, and friends in calm times. A familiar face slows everyone's nervous system in a hard moment. Know who in your life is steady and who is not.", "Systemic": "Build mutual aid relationships before you need them. Post warmline and mobile crisis numbers on the fridge or in your phone favorites. Share resource lists with your block, your group chat, your faith community."}, "Staff": {"Intrapersonal": "Know your role's edges in writing. Learn what the org expects of you and what it does not. Practice settling your own activation.", "Interpersonal": "Build trust with the people you serve before any hard moment. Steady ties are what make one survivable.", "Systemic": "Familiarize yourself with the org's safety, de-escalation, and emergency policies. Participate in skill-building training."}, "Leader / Supervisor": {"Intrapersonal": "Hold yourself to the standard you set for staff. Your regulation sets the ceiling for theirs.", "Interpersonal": "Identify your team's co-regulators and the staff who hold steadiness for others. Resource them.", "Systemic": "Own the written response plan. Resource the training, staffing, and recovery time. Policy without resources is paper."}}, "resources": [{"name": "Trauma Informed Oregon", "contact": "traumainformedoregon.org", "why": "Training, tools, and frameworks for building trauma-informed practice across roles and systems."}, {"name": "NAYA (Native American Youth & Family Center)", "contact": "nayapdx.org / 503-288-8177", "why": "Culturally specific programs rooted in cultural identity, family, and the Relational Worldview Model."}, {"name": "NARA NW", "contact": "naranorthwest.org / 503-224-1044", "why": "Culturally appropriate behavioral health and wellness for Native and Alaska Native people; open to others in need."}, {"name": "Latino Network", "contact": "latnet.org / 503-283-6881", "why": "Latine-led, culturally specific programs for youth and families."}, {"name": "Marie Equi Center", "contact": "marieequi.center", "why": "Centers trans and queer people. Drop-in peer support and systems navigation for low-income and unhoused LGBTQIA2S+ folks."}, {"name": "Brown Hope", "contact": "brownhope.org", "why": "Power Hour offers community and healing from racial trauma. Parent org of the Black Resilience Fund."}, {"name": "Portland Mutual Aid Network", "contact": "portlandmutualaidnetwork.com", "why": "Food, supplies, and care for unhoused neighbors. Meeting needs early is prevention."}, {"name": "Bystander Intervention training", "contact": "portland.gov (search Bystander Intervention)", "why": "Free trainings on stepping in and reading conflict early, before it climbs."}, {"name": "Rose City Self Defense", "contact": "rosecityselfdefense.com", "why": "Personal and community capacity from a harm-reduction lens, so people feel steadier ahead of time."}], "regional_resources": {}}, {"slug": "early_response", "title": "Early Response", "color": "#F9A825", "paragraph": "Something is shifting. The room feels different. The person in front of you feels different. Your own body feels different. The situation is still workable. The first move is your own nervous system. Slow down, soften, lower your voice, open your posture. Read what is actually happening before you decide what to do about it. Most of the work in this phase is attunement, not intervention.", "grid": {"Community Member": {"Intrapersonal": "Catch your own activation first. A few slow rounds of breath before you move or speak. Notice if you are about to react from your own old story.", "Interpersonal": "Open with connection, not control. Ask what is needed. Keep your voice low and your stance soft. Avoid lecturing or fixing.", "Systemic": "If it is not yours to carry, pass it on. Lean on your mutual aid network, group threads, or community warmlines. Say out loud who you are calling and why."}, "Staff": {"Intrapersonal": "Settle yourself first. You cannot steady another person while your own alarm is loud.", "Interpersonal": "Read the person, slow the pace, give room, and guard their dignity in front of others.", "Systemic": "Use the agreed word or signal to call a teammate in without heating up the room."}, "Leader / Supervisor": {"Intrapersonal": "Carry the moment with steadiness. People read the room through the person in charge.", "Interpersonal": "Move toward the room, not away. Your presence backs your staff and steadies the people watching.", "Systemic": "Hold the structure. Make sure the response plan is being followed and the right calls are being made."}}, "resources": [{"name": "David Romprey Oregon Warmline", "contact": "1-800-698-2392 (24/7)", "why": "Peer-run line for someone who just needs to talk. Lived-experience support, open to anyone."}, {"name": "YouthLine", "contact": "877-968-8491 or text teen2teen to 839863", "why": "Teen-to-teen support for younger people who may not open up to an adult."}, {"name": "The Trevor Project", "contact": "1-866-488-7386 or text 678678", "why": "Ongoing support for LGBTQ+ youth through age 24."}, {"name": "NAMI Multnomah", "contact": "namimultnomah.org / 503-228-5692", "why": "Culturally specific resource lists to connect people early."}, {"name": "Multnomah County Crisis Line (support and guidance)", "contact": "503-988-4888 (24/7)", "why": "Talk through a rising situation with a counselor before it tips."}], "regional_resources": {"all": [{"name": "Oregon Behavioral Health Support Line", "contact": "800-923-4357 (24/7)", "why": "Statewide free behavioral health screening, counseling, and referrals."}, {"name": "Lines for Life Drug and Alcohol Help", "contact": "800-923-4357 or text RecoveryNow to 839863", "why": "Crisis intervention, treatment referral, and chemical dependency information."}, {"name": "Senior Loneliness Line (Lines for Life)", "contact": "503-200-1633", "why": "Peer support for older adults dealing with isolation, grief, anxiety, or depression."}, {"name": "Military Helpline", "contact": "888-457-4838 or text MIL1 to 839863", "why": "Confidential support for service members, veterans, and their families."}]}}, {"slug": "elevated_response", "title": "Elevated Response", "color": "#E65100", "paragraph": "The situation is climbing. Words alone are not steadying it. The work shifts toward safety without abandoning presence. Increase distance, keep your exit accessible, signal a teammate, reduce the audience. Brief, clear language only. No power struggles, no ultimatums, no raised voices. Stay calm in your body so the room has something steady to track.", "grid": {"Community Member": {"Intrapersonal": "Stay in your breath. Increase distance without losing presence. Know your exit before you need it.", "Interpersonal": "Reduce demands. Short, clear sentences. No ultimatums. No power struggles. Do not try to win the moment.", "Systemic": "Signal for backup from your community network. Reduce the audience. Fewer eyes, less heat. Ask others to give space. Use community responders who can arrive faster than 911."}, "Staff": {"Intrapersonal": "Reposition so you have access to an exit. Keep your body language open and your voice low.", "Interpersonal": "Brief, clear, simple language only. Protect the person's dignity even while moving toward safety.", "Systemic": "Activate your call-in protocol. Make the discrete signal. Get a colleague in the room."}, "Leader / Supervisor": {"Intrapersonal": "Hold your own ground. Do not show up activated. Your steady body is part of the intervention.", "Interpersonal": "Back your staff out loud and in front of the person. Take over the lead if your staff member needs to step back.", "Systemic": "Authorize the next steps. Make sure the call path is being followed and the room is being managed."}}, "resources": [{"name": "Project Respond (mobile crisis team)", "contact": "Via 503-988-4888", "why": "Trained clinicians and peers come to the person when activation is rising but the situation is still workable. Not police."}, {"name": "Portland Street Response", "contact": "Via 503-988-4888", "why": "Unarmed responders (paramedic, crisis therapist, community health workers) for calls that do not need police. Citywide."}, {"name": "Cascadia Urgent Walk-In Clinic", "contact": "4212 SE Division St, Portland / 503-238-0737 (Mon-Fri 7am-10:30pm)", "why": "Somewhere to bring a person before things tip into emergency. No appointment, regardless of insurance or income."}, {"name": "Multnomah County Crisis Line", "contact": "503-988-4888 (24/7)", "why": "Talk through a rising situation and request mobile dispatch if needed."}], "regional_resources": {"willamette": [{"name": "CAHOOTS (White Bird Clinic)", "contact": "541-687-4000 (24/7, Eugene and Springfield)", "why": "Mobile crisis with mental health worker and EMT, not police. National model."}, {"name": "Lane County Mobile Crisis", "contact": "541-682-1001 (24/7)", "why": "Mobile crisis intervention for adults and youth in Lane County."}], "central": [{"name": "Deschutes County Stabilization Center", "contact": "63311 NE Jamison St, Bend / 541-585-7210 (24/7 walk-in)", "why": "Walk-in mental health crisis center. Drug and weapon free. No appointment needed."}, {"name": "Deschutes Community Crisis Response Team", "contact": "541-322-7500 ext. 9 (24/7)", "why": "Mobile crisis intervention 24/7 across Deschutes County."}], "southern": [{"name": "Jackson County Mobile Crisis (Mercy Flights)", "contact": "541-774-8201 (24/7)", "why": "Mental health staff paired with EMS for in-community crisis response. Alternative to law enforcement."}]}}, {"slug": "critical_response", "title": "Critical Response", "color": "#B71C1C", "paragraph": "Safety is at stake right now. This is the last column, not the first move. Activate external support: security, mobile crisis, 911, the org's emergency procedures. Know in advance what the consequences of each call may be for the person in front of you, and choose with that knowledge in hand. Do not intervene physically unless trained and the situation requires it. Once the immediate threat is contained, the work moves to Recovery.", "grid": {"Community Member": {"Intrapersonal": "Move to safety. Get yourself out of the line of harm. You cannot help anyone from inside the crisis.", "Interpersonal": "Do not intervene physically unless trained and the situation requires it. Stay present from a safe distance if you can. Tell others what to do, not what not to do.", "Systemic": "Call your first-call number. Reach community responders or mobile crisis before law enforcement when it is safe to do so. 911 only with awareness of impact for the person in crisis."}, "Staff": {"Intrapersonal": "Protect yourself first. You cannot help anyone from inside the harm.", "Interpersonal": "Give clear, brief direction to others in the room: where to go, what to do.", "Systemic": "Follow your org's emergency response procedures. Call security, mobile crisis, or 911 per protocol. Document what you did and when."}, "Leader / Supervisor": {"Intrapersonal": "Stay clear-headed. Track the room and the decisions being made.", "Interpersonal": "Direct the response. Take over if your staff member is overwhelmed. Make sure no one is left alone.", "Systemic": "Activate the full emergency response. Be in contact with the responders en route. Begin the documentation thread."}}, "resources": [{"name": "Multnomah County Crisis Line", "contact": "503-988-4888 or 1-800-716-9769 (24/7)", "why": "The main number to call instead of 911 for a mental health crisis. Ask for Project Respond by name."}, {"name": "988 Suicide & Crisis Lifeline", "contact": "Call or text 988 (press 2 for Spanish)", "why": "National 24/7 line in many languages. Good for suicidal thoughts or acute crisis."}, {"name": "Washington County Crisis Line", "contact": "503-291-9111 (24/7)", "why": "Same kind of crisis support for people in the western suburbs outside Multnomah County."}, {"name": "Unity Center for Behavioral Health", "contact": "1225 NE 2nd Ave, Portland / 503-944-8000 (24/7)", "why": "Psychiatric emergency room for adults when someone needs a higher level of care than a phone line."}, {"name": "911", "contact": "911", "why": "Life-threatening emergency only. Know the possible consequences for the person in crisis before you call."}], "regional_resources": {"portland": [{"name": "Clackamas County Crisis Line", "contact": "503-655-8585 (24/7)", "why": "24/7 crisis support for Clackamas County."}, {"name": "Clatsop County Crisis Line", "contact": "503-325-5724 (24/7)", "why": "Crisis support for Clatsop County and the North Coast."}], "willamette": [{"name": "Marion County Crisis Line", "contact": "503-585-4949 (24/7)", "why": "24/7 crisis support for Marion County (Salem area)."}, {"name": "Lane County Crisis Line", "contact": "541-687-4000 (24/7)", "why": "24/7 crisis support for Lane County (Eugene and Springfield)."}, {"name": "Benton County Behavioral Health", "contact": "888-232-7192 (24/7)", "why": "24/7 crisis support for Benton County (Corvallis area)."}, {"name": "Linn and Yamhill County Crisis Line", "contact": "800-560-5535 (24/7)", "why": "24/7 crisis support for Linn and Yamhill counties."}, {"name": "Polk County Behavioral Health", "contact": "503-623-9289 (24/7)", "why": "24/7 crisis support for Polk County."}], "southern": [{"name": "Jackson County Crisis Line", "contact": "541-774-8201 (24/7)", "why": "24/7 crisis support and mobile response for Jackson County (Medford and Ashland)."}, {"name": "Douglas County Crisis Line", "contact": "541-440-3532 (24/7)", "why": "24/7 crisis support for Douglas County (Roseburg area)."}, {"name": "Klamath County Crisis Line", "contact": "541-883-1030 (24/7)", "why": "24/7 crisis support for Klamath County."}], "central": [{"name": "Deschutes County Crisis Line", "contact": "541-322-7500 ext. 9 or 800-875-7364 (24/7)", "why": "24/7 crisis line for Deschutes County. Walk-in Stabilization Center in Bend."}], "coast": [{"name": "Tillamook Family Counseling Crisis", "contact": "503-842-8201 or 800-962-2851 (24/7)", "why": "24/7 crisis support for Tillamook County."}, {"name": "Lincoln County Behavioral Health", "contact": "541-265-4196", "why": "Crisis support for Lincoln County (Newport area)."}, {"name": "Coos and Curry Behavioral Health (ADAPT)", "contact": "877-519-9322 (24/7)", "why": "24/7 crisis support for Coos and Curry counties."}], "eastern": [{"name": "Lifeways 24-hour Crisis Line", "contact": "541-276-6207 or 866-343-4473 (24/7)", "why": "Crisis support for Umatilla, Union, Wallowa, Malheur, and Baker counties."}, {"name": "Center for Human Development", "contact": "541-962-8800 (Union County)", "why": "Crisis and behavioral health for Union County."}]}}, {"slug": "recovery", "title": "Recovery", "color": "#1565C0", "paragraph": "The incident is over. The people are not. Tend to staff and community members one at a time, on their own timeline. Some are ready to talk in an hour, some in a week, some never out loud. Offer more than one door in. Normalize a range of reactions without judgment. Connect people to real supports, not just a flyer. What happens here shapes whether anyone trusts the next response.", "grid": {"Community Member": {"Intrapersonal": "Tend your own body. Sleep, food, breath, slow movement, time off screens. Do not bypass your own recovery to take care of others.", "Interpersonal": "Check on the people who were there with you. Offer more than one door in: a text, a walk, a sit-down. Some are ready in an hour, some in a week, some never out loud.", "Systemic": "Lean on mutual aid, peer support, and warmlines. Tend neighbors who were also affected. Help others find their people."}, "Staff": {"Intrapersonal": "Use the supports the org provides. EAP, peer support, time off. Do not push through.", "Interpersonal": "Check in individually with people who were present. Ask what they needed and what was missing.", "Systemic": "Document what happened. Follow your org's post-incident procedures. Show up for the debrief."}, "Leader / Supervisor": {"Intrapersonal": "Tend your own recovery openly. Staff watch what leaders do, not what they say.", "Interpersonal": "Reach out to community members involved. Offer a facilitated debrief and connection time.", "Systemic": "Run the team debrief. Connect staff and community members to mental health supports. Hold space for a range of reactions without judgment."}}, "resources": [{"name": "David Romprey Oregon Warmline", "contact": "1-800-698-2392 (24/7)", "why": "Peer-run line for processing without being in active crisis."}, {"name": "Brown Hope Power Hour", "contact": "brownhope.org", "why": "Community and healing from racial trauma. Especially relevant for Black, Brown, and Indigenous staff and community."}, {"name": "NAMI Multnomah", "contact": "namimultnomah.org / 503-228-5692", "why": "Culturally specific support groups and resource lists for ongoing processing."}, {"name": "Your Employee Assistance Program (EAP)", "contact": "Check your org's HR or benefits portal", "why": "Short-term counseling and referral, usually at no cost to the employee."}, {"name": "Cascadia Urgent Walk-In Clinic", "contact": "4212 SE Division St, Portland / 503-238-0737", "why": "Same-day support if processing leads back toward crisis."}], "regional_resources": {}}, {"slug": "mitigation", "title": "Mitigation", "color": "#546E7A", "paragraph": "Look back to look forward. Name what in the environment, the policies, the relationships, or the unmet needs contributed to what happened. Invite the people most impacted into the room where solutions get named. Update what needs updating. Set a review date. Mitigation is care, not blame. It is the difference between a single hard moment and a pattern that keeps repeating.", "grid": {"Community Member": {"Intrapersonal": "Notice what you learned about your own thresholds. Adjust your practices for next time. Be honest about what you can and cannot hold.", "Interpersonal": "Tell people you trust what you noticed. The patterns you see are part of what others miss.", "Systemic": "Bring what you saw to community spaces and orgs if it is safe to do so. Organize with neighbors around the patterns that keep repeating. Ask for the changes you want to see."}, "Staff": {"Intrapersonal": "Take what you learned into your own practice. What worked, what did not, what you want to try differently.", "Interpersonal": "Share what you saw with your team. The patterns you notice are part of the data.", "Systemic": "Participate in the systems review. Bring what you saw on the ground to the policy table."}, "Leader / Supervisor": {"Intrapersonal": "Be honest with yourself about your role in what happened and what could shift.", "Interpersonal": "Invite the people most impacted into the room where solutions get named.", "Systemic": "Identify contributing variables: environment, policies, relationships, unmet needs. Update what needs updating. Set a review date. Resource the changes you commit to."}}, "resources": [{"name": "Trauma Informed Oregon: De-escalation training", "contact": "traumainformedoregon.org", "why": "Companion training series for this map. Use it to ground the systems review."}, {"name": "Feedback and additions", "contact": "Send to your training coordinator", "why": "If you have a resource, a correction, or a pattern you want named, send it forward. This map is meant to keep moving."}], "regional_resources": {}}]};
 
 const state = {
   phaseIdx: 0,
-  role: null,  // null = show all roles; otherwise role name
+  role: null,
+  region: 'all',
+  search: '',
 };
+
+const REGION_LABELS = {
+  all: 'Statewide',
+  portland: 'Portland Metro',
+  willamette: 'Willamette Valley',
+  southern: 'Southern Oregon',
+  central: 'Central Oregon',
+  coast: 'Oregon Coast',
+  eastern: 'Eastern Oregon',
+};
+
+function autoTagRegion(r) {
+  const name = r.name.toLowerCase();
+  const contact = r.contact.toLowerCase();
+  // Statewide by name
+  const statewideNames = [
+    'oregon warmline', 'romprey', 'youthline', 'trevor project',
+    'trauma informed oregon', 'oregon behavioral', 'lines for life',
+    'military helpline', 'senior loneliness', 'employee assistance',
+    '988 suicide', 'suicide & crisis lifeline', 'suicide and crisis lifeline',
+    'feedback and additions',
+  ];
+  if (statewideNames.some(t => name.includes(t))) return 'all';
+  if (name === '911' || name === '988') return 'all';
+  // Portland-area by name
+  const portlandNames = [
+    'multnomah', 'washington county', 'clackamas', 'clatsop',
+    'naya', 'nara nw', 'latino network', 'marie equi', 'brown hope',
+    'portland mutual aid', 'bystander intervention', 'rose city',
+    'cascadia', 'project respond', 'portland street response',
+    'unity center', 'nami multnomah',
+  ];
+  if (portlandNames.some(t => name.includes(t))) return 'portland';
+  // Fall back: 503 area code in contact
+  if (/\b503-/.test(contact)) return 'portland';
+  return 'all';
+}
 
 function setPhase(idx) {
   state.phaseIdx = idx;
   const phase = DATA.phases[idx];
   document.documentElement.style.setProperty('--phase', phase.color);
   document.documentElement.style.setProperty('--phase-soft', hexToRgba(phase.color, 0.08));
-  document.querySelectorAll('#phaseTabs .tab').forEach((t, i) => {
+  document.querySelectorAll('#continuumStops .stop').forEach((t, i) => {
     t.setAttribute('aria-selected', i === idx ? 'true' : 'false');
   });
   document.getElementById('phaseEyebrow').textContent = phaseEyebrow(phase);
@@ -448,10 +594,7 @@ function phaseEyebrow(phase) {
 
 function hexToRgba(hex, alpha) {
   const h = hex.replace('#', '');
-  const r = parseInt(h.substring(0,2),16);
-  const g = parseInt(h.substring(2,4),16);
-  const b = parseInt(h.substring(4,6),16);
-  return `rgba(${r},${g},${b},${alpha})`;
+  return `rgba(${parseInt(h.substring(0,2),16)},${parseInt(h.substring(2,4),16)},${parseInt(h.substring(4,6),16)},${alpha})`;
 }
 
 function setRole(role) {
@@ -462,15 +605,16 @@ function setRole(role) {
   renderGrid();
 }
 
-function renderTabs() {
-  const tabs = document.getElementById('phaseTabs');
-  tabs.innerHTML = DATA.phases.map((p, i) => `
-    <button class="tab" role="tab" aria-selected="false" data-idx="${i}" style="--tab-color: ${p.color};">
-      <span class="dot"></span>${p.title}
+function renderStops() {
+  const stops = document.getElementById('continuumStops');
+  stops.innerHTML = DATA.phases.map((p, i) => `
+    <button class="stop" role="tab" aria-selected="false" data-idx="${i}" style="--c: ${p.color};">
+      <span class="marker"></span>
+      <span class="stop-label">${p.title}</span>
     </button>
   `).join('');
-  tabs.addEventListener('click', (e) => {
-    const t = e.target.closest('.tab');
+  stops.addEventListener('click', e => {
+    const t = e.target.closest('.stop');
     if (!t) return;
     setPhase(parseInt(t.dataset.idx, 10));
   });
@@ -482,7 +626,7 @@ function renderRoles() {
   pills.innerHTML = items.map(it => `
     <button class="role-pill ${it.cls || ''}" data-role="${it.role}" aria-pressed="${it.role === '__all__' ? 'true' : 'false'}">${it.label}</button>
   `).join('');
-  pills.addEventListener('click', (e) => {
+  pills.addEventListener('click', e => {
     const p = e.target.closest('.role-pill');
     if (!p) return;
     setRole(p.dataset.role === '__all__' ? null : p.dataset.role);
@@ -492,13 +636,8 @@ function renderRoles() {
 function renderGrid() {
   const phase = DATA.phases[state.phaseIdx];
   const grid = document.getElementById('grid');
-  const cells = [];
-  // Header row: blank corner + 3 level headers
-  cells.push(`<div class="grid-cell head"></div>`);
-  DATA.levels.forEach(lvl => {
-    cells.push(`<div class="grid-cell head">${lvl}</div>`);
-  });
-  // Role rows
+  const cells = [`<div class="grid-cell head"></div>`];
+  DATA.levels.forEach(lvl => cells.push(`<div class="grid-cell head">${lvl}</div>`));
   DATA.roles.forEach((role, i) => {
     const dimmed = state.role && state.role !== role ? 'true' : 'false';
     cells.push(`<div class="grid-row" data-dimmed="${dimmed}">
@@ -509,18 +648,61 @@ function renderGrid() {
   grid.innerHTML = cells.join('');
 }
 
-function renderResources() {
+function buildResourcesList() {
   const phase = DATA.phases[state.phaseIdx];
+  const list = [];
+
+  // Existing curated resources, auto-tagged
+  phase.resources.forEach(r => {
+    const region = autoTagRegion(r);
+    list.push({...r, region});
+  });
+
+  // Regional resources from RESOURCES_BY_REGION
+  const regional = phase.regional_resources || {};
+  Object.entries(regional).forEach(([region, items]) => {
+    items.forEach(r => list.push({...r, region}));
+  });
+
+  // Region filter: when not 'all', show only resources tagged 'all' (statewide) + selected region
+  let filtered = list;
+  if (state.region !== 'all') {
+    filtered = list.filter(r => r.region === 'all' || r.region === state.region);
+  }
+
+  // Sort: statewide first, then by region match, preserve original order otherwise
+  filtered.sort((a, b) => {
+    if (a.region === 'all' && b.region !== 'all') return -1;
+    if (a.region !== 'all' && b.region === 'all') return 1;
+    return 0;
+  });
+
+  return filtered;
+}
+
+function renderResources() {
+  let list = buildResourcesList();
+
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    list = list.filter(r =>
+      (r.name + ' ' + r.contact + ' ' + r.why).toLowerCase().includes(q)
+    );
+  }
+
   const wrap = document.getElementById('resources');
-  if (!phase.resources.length) {
-    wrap.innerHTML = `<div class="resource" style="grid-template-columns: 1fr;"><div class="why">No external resources for this phase. This phase is about internal practice and systems review.</div></div>`;
+  if (!list.length) {
+    wrap.innerHTML = `<div class="resource-empty">No resources match this search and region. Try clearing the search field, switching region, or use 211info or the OHA directory above for the broader list.</div>`;
     return;
   }
-  wrap.innerHTML = phase.resources.map(r => `
+
+  wrap.innerHTML = list.map(r => `
     <div class="resource">
-      <div class="name"><span class="marker"></span>${escapeHtml(r.name)}</div>
+      <div class="name">
+        <span class="marker"></span>${escapeHtml(r.name)}
+      </div>
       <div class="contact">${linkify(escapeHtml(r.contact))}</div>
-      <div class="why">${escapeHtml(r.why)}</div>
+      <div class="why">${escapeHtml(r.why)}<br><span class="region-tag">${REGION_LABELS[r.region] || r.region}</span></div>
     </div>
   `).join('');
 }
@@ -530,14 +712,10 @@ function escapeHtml(s) {
 }
 
 function linkify(s) {
-  // Single pass: match emails, then full phone numbers (with optional 1- prefix), then bare 988.
-  // Using one replace avoids re-matching digits inside the href we just inserted.
   const linkStyle = 'color:inherit;text-decoration:underline;text-decoration-color:rgba(0,0,0,.25);';
-  // Emails first (longer, more specific) so a phone-like substring inside an email isn't taken.
   s = s.replace(/([\w.-]+@[\w.-]+\.\w+)/g, (m) =>
     `<a href="mailto:${m}" style="${linkStyle}">${m}</a>`
   );
-  // Phone numbers + standalone 988, single alternation
   s = s.replace(/\b(?:1-\d{3}-\d{3}-\d{4}|\d{3}-\d{3}-\d{4}|988)\b/g, (m) => {
     const tel = m.replace(/[^\d]/g, '');
     return `<a href="tel:${tel}" style="${linkStyle}">${m}</a>`;
@@ -545,12 +723,21 @@ function linkify(s) {
   return s;
 }
 
+// Events
+document.getElementById('regionSelect').addEventListener('change', e => {
+  state.region = e.target.value;
+  renderResources();
+});
+document.getElementById('searchInput').addEventListener('input', e => {
+  state.search = e.target.value.toLowerCase().trim();
+  renderResources();
+});
+
 // Init
-renderTabs();
+renderStops();
 renderRoles();
 setPhase(0);
 
-// Allow phase selection via URL hash
 window.addEventListener('hashchange', loadFromHash);
 function loadFromHash() {
   const h = location.hash.replace('#', '');
@@ -559,6 +746,5 @@ function loadFromHash() {
 }
 loadFromHash();
 </script>
-
 </body>
 </html>
