@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Community Care Resource Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF7F0;
+    --surface: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-muted: #4A4A4A;
+    --ink-subtle: #6B6B6B;
+    --rule: #E5E0D5;
+    --teal: #0F6E6E;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.05);
+
+    --c-preparedness: #2E7D32;
+    --c-early_response: #F9A825;
+    --c-elevated_response: #E65100;
+    --c-critical_response: #B71C1C;
+    --c-recovery: #1565C0;
+    --c-mitigation: #546E7A;
+
+    --phase: var(--teal);
+    --phase-soft: rgba(15,110,110,.08);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 88px;
+  }
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  /* Top bar */
+  .topbar {
+    border-bottom: 1px solid var(--rule);
+    background: var(--surface);
+    padding: 20px 0 24px;
+    position: sticky; top: 0; z-index: 30;
+    backdrop-filter: saturate(120%) blur(6px);
+    background: rgba(255,255,255,.92);
+  }
+  .topbar-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+  .brand h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(22px, 3.2vw, 30px);
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .brand p { margin: 0; color: var(--ink-subtle); font-size: 14px; }
+  .brand .accent { color: var(--phase); transition: color .25s ease; }
+
+  /* Phase tabs */
+  .phase-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 14px 0 4px;
+    margin-top: 8px;
+    scrollbar-width: thin;
+  }
+  .phase-tabs::-webkit-scrollbar { height: 6px; }
+  .phase-tabs::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+  .tab {
+    flex: 0 0 auto;
+    padding: 10px 14px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: all .18s ease;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .tab:hover { border-color: var(--ink-muted); color: var(--ink); }
+  .tab[aria-selected="true"] {
+    background: var(--phase);
+    border-color: var(--phase);
+    color: white;
+    font-weight: 600;
+  }
+  .tab .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--tab-color);
+    flex: 0 0 auto;
+  }
+  .tab[aria-selected="true"] .dot { background: rgba(255,255,255,.6); }
+
+  /* Phase intro */
+  .phase-panel { padding: 32px 0 8px; }
+  .phase-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--phase);
+    margin-bottom: 8px;
+  }
+  .phase-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(28px, 5vw, 44px);
+    margin: 0 0 16px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .phase-paragraph {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-muted);
+    max-width: 760px;
+    margin: 0;
+  }
+  .phase-stripe {
+    height: 4px;
+    background: var(--phase);
+    border-radius: 2px;
+    width: 56px;
+    margin: 20px 0 0;
+  }
+
+  /* Role filter */
+  .role-row {
+    display: flex; align-items: center; gap: 12px;
+    margin: 36px 0 16px;
+    flex-wrap: wrap;
+  }
+  .role-label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-subtle);
+  }
+  .role-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .role-pill {
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: all .18s ease;
+  }
+  .role-pill:hover { border-color: var(--ink-muted); color: var(--ink); }
+  .role-pill[aria-pressed="true"] {
+    background: var(--phase);
+    border-color: var(--phase);
+    color: white;
+  }
+  .role-pill.all[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  /* Grid */
+  .grid-section h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: 22px;
+    margin: 0 0 16px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 160px repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .grid-cell {
+    background: var(--surface);
+    padding: 16px;
+  }
+  .grid-cell.head {
+    background: var(--phase);
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 14px 16px;
+  }
+  .grid-cell.role-head {
+    background: var(--phase-soft);
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 14px;
+    display: flex; align-items: center;
+  }
+  .grid-cell.role-head .num {
+    display: inline-block;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--phase);
+    color: white;
+    text-align: center;
+    line-height: 22px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 10px;
+  }
+  .grid-cell.body {
+    font-size: 15px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+  .grid-row[data-dimmed="true"] .grid-cell.body,
+  .grid-row[data-dimmed="true"] .grid-cell.role-head {
+    opacity: 0.32;
+  }
+  .grid-row { display: contents; }
+
+  /* Resources */
+  .resources-section { margin-top: 56px; }
+  .resources-section h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: 22px;
+    margin: 0 0 16px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .resources {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .resource {
+    display: grid;
+    grid-template-columns: 1.3fr 1.2fr 1.6fr;
+    gap: 24px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--rule);
+    align-items: start;
+  }
+  .resource:last-child { border-bottom: 0; }
+  .resource .name { font-weight: 600; color: var(--ink); }
+  .resource .contact { color: var(--ink-muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .resource .why { color: var(--ink-muted); font-size: 14px; line-height: 1.5; }
+  .resource .marker {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--phase);
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* Sticky crisis footer */
+  .crisis-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #1A1A1A;
+    color: white;
+    padding: 12px 24px;
+    z-index: 40;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.18);
+  }
+  .crisis-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex; align-items: center; gap: 18px;
+    flex-wrap: wrap;
+    font-size: 14px;
+  }
+  .crisis-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #FF9B9B;
+  }
+  .crisis-inner a {
+    color: white;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,.3);
+    padding-bottom: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+  .crisis-inner a:hover { border-bottom-color: white; }
+  .crisis-sep { color: #555; }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .container { padding: 0 16px; }
+    .topbar { padding: 14px 0 16px; }
+    .topbar-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .phase-tabs { padding-top: 4px; }
+    .phase-panel { padding: 24px 0 0; }
+    .phase-title { font-size: 28px; }
+    .phase-paragraph { font-size: 16px; }
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .grid-cell.head { display: none; }
+    .grid-cell.role-head {
+      padding: 14px 16px;
+      border-top: 1px solid var(--rule);
+    }
+    .grid-cell.role-head:first-of-type { border-top: 0; }
+    .grid-cell.body {
+      padding: 8px 16px 4px;
+    }
+    .grid-cell.body::before {
+      content: attr(data-level);
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--phase);
+      margin-bottom: 4px;
+    }
+    .grid-cell.body:last-of-type { padding-bottom: 16px; }
+    .resource { grid-template-columns: 1fr; gap: 6px; padding: 16px; }
+    .resource .contact, .resource .why { font-size: 13px; }
+    .crisis-bar { padding: 10px 16px; }
+    .crisis-inner { gap: 10px; font-size: 13px; }
+  }
+
+  /* Footer note */
+  .footnote {
+    margin-top: 56px;
+    padding: 24px 0 8px;
+    color: var(--ink-subtle);
+    font-size: 13px;
+    border-top: 1px solid var(--rule);
+  }
+  .footnote a { color: var(--phase); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-row">
+      <div class="brand">
+        <h1>Community Care <span class="accent">Resource Map</span></h1>
+        <p>Six phases of response. Three roles. One companion to the Trauma-Informed De-escalation training series.</p>
+      </div>
+    </div>
+    <div class="phase-tabs" role="tablist" id="phaseTabs"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="phase-panel">
+    <div class="phase-eyebrow" id="phaseEyebrow">Phase</div>
+    <h2 class="phase-title" id="phaseTitle"></h2>
+    <p class="phase-paragraph" id="phaseParagraph"></p>
+    <div class="phase-stripe"></div>
+  </div>
+
+  <div class="role-row">
+    <span class="role-label">Read as</span>
+    <div class="role-pills" id="rolePills"></div>
+  </div>
+
+  <section class="grid-section">
+    <h2>How to respond</h2>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="resources-section">
+    <h2>Resources</h2>
+    <div class="resources" id="resources"></div>
+  </section>
+
+  <div class="footnote" id="footnote">
+    Last reviewed June 2026. Companion to the Trauma-Informed De-escalation training series. Email <a href="mailto:info@culturedcare.org">info@culturedcare.org</a> to suggest a resource or correction.
+  </div>
+</div>
+
+<div class="crisis-bar" role="region" aria-label="Crisis lines">
+  <div class="crisis-inner">
+    <span class="crisis-label">In crisis right now</span>
+    <a href="tel:5039884888">Multnomah Crisis 503-988-4888</a>
+    <span class="crisis-sep">•</span>
+    <a href="tel:988">988 Lifeline</a>
+    <span class="crisis-sep">•</span>
+    <a href="tel:911">911</a>
+  </div>
+</div>
+
+<script>
+const DATA = {"intro": "This map sorts response by where you are on the continuum of care, not by category. Six phases run from before anything happens to after the moment is over and you are looking back to look forward. Each phase tells you what to do at three levels (steadying yourself, steadying others, steadying the system around you) and points to the resources that fit. Click any color tile below to enter that phase. The goal of everything upstream is to reach the red column less often.", "roles": ["Community Member", "Staff", "Leader / Supervisor"], "levels": ["Intrapersonal", "Interpersonal", "Organizational"], "phases": [{"slug": "preparedness", "title": "Preparedness", "color": "#2E7D32", "emoji": "🟢", "paragraph": "Before anything hard happens. This is the steady, ordinary work that makes a harder moment survivable. Know your role and its edges. Know your limits. Build real relationships with the people around you in calm times. Post the numbers somewhere they can be found without searching. Practice the skills your body will need to reach for. Most of what protects people in a crisis was put in place long before the crisis arrived.", "grid": {"Community Member": {"Intrapersonal": "Know your own limits before anything happens. Name what you will step into and what you will not. Build the practices your body can reach for under stress.", "Interpersonal": "Build real ties with the people around you in calm times. A familiar face slows everyone's nervous system in a hard moment.", "Organizational": "Know who in your community is the first call. Help post warmline and mobile crisis numbers where they can be found without searching."}, "Staff": {"Intrapersonal": "Know your role's edges in writing. Learn what the org expects of you and what it does not. Practice settling your own activation.", "Interpersonal": "Build trust with the people you serve before any hard moment. Steady ties are what make one survivable.", "Organizational": "Familiarize yourself with the org's safety, de-escalation, and emergency policies. Participate in skill-building training."}, "Leader / Supervisor": {"Intrapersonal": "Hold yourself to the standard you set for staff. Your regulation sets the ceiling for theirs.", "Interpersonal": "Identify your team's co-regulators and the staff who hold steadiness for others. Resource them.", "Organizational": "Own the written response plan. Resource the training, staffing, and recovery time. Policy without resources is paper."}}, "resources": [{"name": "Trauma Informed Oregon", "contact": "traumainformedoregon.org", "why": "Training, tools, and frameworks for building trauma-informed practice across roles and systems."}, {"name": "NAYA (Native American Youth & Family Center)", "contact": "nayapdx.org / 503-288-8177", "why": "Culturally specific programs rooted in cultural identity, family, and the Relational Worldview Model."}, {"name": "NARA NW", "contact": "naranorthwest.org / 503-224-1044", "why": "Culturally appropriate behavioral health and wellness for Native and Alaska Native people; open to others in need."}, {"name": "Latino Network", "contact": "latnet.org / 503-283-6881", "why": "Latine-led, culturally specific programs for youth and families."}, {"name": "Marie Equi Center", "contact": "marieequi.center", "why": "Centers trans and queer people. Drop-in peer support and systems navigation for low-income and unhoused LGBTQIA2S+ folks."}, {"name": "Brown Hope", "contact": "brownhope.org", "why": "Power Hour offers community and healing from racial trauma. Parent org of the Black Resilience Fund."}, {"name": "Portland Mutual Aid Network", "contact": "portlandmutualaidnetwork.com", "why": "Food, supplies, and care for unhoused neighbors. Meeting needs early is prevention."}, {"name": "Bystander Intervention training", "contact": "portland.gov (search Bystander Intervention)", "why": "Free trainings on stepping in and reading conflict early, before it climbs."}, {"name": "Rose City Self Defense", "contact": "rosecityselfdefense.com", "why": "Personal and community capacity from a harm-reduction lens, so people feel steadier ahead of time."}]}, {"slug": "early_response", "title": "Early Response", "color": "#F9A825", "emoji": "🟡", "paragraph": "Something is shifting. The room feels different. The person in front of you feels different. Your own body feels different. The situation is still workable. The first move is your own nervous system. Slow down, soften, lower your voice, open your posture. Read what is actually happening before you decide what to do about it. Most of the work in this phase is attunement, not intervention.", "grid": {"Community Member": {"Intrapersonal": "Catch your own activation first. A few slow rounds of the Cool-Ah Breath before you move.", "Interpersonal": "Open with connection, not control. Ask what is needed. Keep your voice low and your stance soft.", "Organizational": "If it is not yours to carry, pass it on. Say out loud who you are calling and why."}, "Staff": {"Intrapersonal": "Settle yourself first. You cannot steady another person while your own alarm is loud.", "Interpersonal": "Read the person, slow the pace, give room, and guard their dignity in front of others.", "Organizational": "Use the agreed word or signal to call a teammate in without heating up the room."}, "Leader / Supervisor": {"Intrapersonal": "Carry the moment with steadiness. People read the room through the person in charge.", "Interpersonal": "Move toward the room, not away. Your presence backs your staff and steadies the people watching.", "Organizational": "Hold the structure. Make sure the response plan is being followed and the right calls are being made."}}, "resources": [{"name": "David Romprey Oregon Warmline", "contact": "1-800-698-2392 (24/7)", "why": "Peer-run line for someone who just needs to talk. Lived-experience support, open to anyone."}, {"name": "YouthLine", "contact": "877-968-8491 or text teen2teen to 839863", "why": "Teen-to-teen support for younger people who may not open up to an adult."}, {"name": "The Trevor Project", "contact": "1-866-488-7386 or text 678678", "why": "Ongoing support for LGBTQ+ youth through age 24."}, {"name": "NAMI Multnomah", "contact": "namimultnomah.org / 503-228-5692", "why": "Culturally specific resource lists to connect people early."}, {"name": "Multnomah County Crisis Line (support and guidance)", "contact": "503-988-4888 (24/7)", "why": "Talk through a rising situation with a counselor before it tips."}]}, {"slug": "elevated_response", "title": "Elevated Response", "color": "#E65100", "emoji": "🟠", "paragraph": "The situation is climbing. Words alone are not steadying it. The work shifts toward safety without abandoning presence. Increase distance, keep your exit accessible, signal a teammate, reduce the audience. Brief, clear language only. No power struggles, no ultimatums, no raised voices. Stay calm in your body so the room has something steady to track.", "grid": {"Community Member": {"Intrapersonal": "Stay in your breath. Increase distance without losing presence. Know your exit.", "Interpersonal": "Reduce demands. Use short, clear sentences. No ultimatums. No power struggles.", "Organizational": "Signal for backup. Reduce the audience. Ask others to give space."}, "Staff": {"Intrapersonal": "Reposition so you have access to an exit. Keep your body language open and your voice low.", "Interpersonal": "Brief, clear, simple language only. Protect the person's dignity even while moving toward safety.", "Organizational": "Activate your call-in protocol. Make the discrete signal. Get a colleague in the room."}, "Leader / Supervisor": {"Intrapersonal": "Hold your own ground. Do not show up activated. Your steady body is part of the intervention.", "Interpersonal": "Back your staff out loud and in front of the person. Take over the lead if your staff member needs to step back.", "Organizational": "Authorize the next steps. Make sure the call path is being followed and the room is being managed."}}, "resources": [{"name": "Project Respond (mobile crisis team)", "contact": "Via 503-988-4888", "why": "Trained clinicians and peers come to the person when activation is rising but the situation is still workable. Not police."}, {"name": "Portland Street Response", "contact": "Via 503-988-4888", "why": "Unarmed responders (paramedic, crisis therapist, community health workers) for calls that do not need police. Citywide."}, {"name": "Cascadia Urgent Walk-In Clinic", "contact": "4212 SE Division St, Portland / 503-238-0737 (Mon-Fri 7am-10:30pm)", "why": "Somewhere to bring a person before things tip into emergency. No appointment, regardless of insurance or income."}, {"name": "Multnomah County Crisis Line", "contact": "503-988-4888 (24/7)", "why": "Talk through a rising situation and request mobile dispatch if needed."}]}, {"slug": "critical_response", "title": "Critical Response", "color": "#B71C1C", "emoji": "🔴", "paragraph": "Safety is at stake right now. This is the last column, not the first move. Activate external support: security, mobile crisis, 911, the org's emergency procedures. Know in advance what the consequences of each call may be for the person in front of you, and choose with that knowledge in hand. Do not intervene physically unless trained and the situation requires it. Once the immediate threat is contained, the work moves to Recovery.", "grid": {"Community Member": {"Intrapersonal": "Move to safety. Get yourself out of the line of harm.", "Interpersonal": "Do not intervene physically unless trained and the situation requires it. Stay present from a safe distance if you can.", "Organizational": "Call your first-call number. Mobile crisis when possible. 911 with awareness of impact for the person in crisis."}, "Staff": {"Intrapersonal": "Protect yourself first. You cannot help anyone from inside the harm.", "Interpersonal": "Give clear, brief direction to others in the room: where to go, what to do.", "Organizational": "Follow your org's emergency response procedures. Call security, mobile crisis, or 911 per protocol. Document what you did and when."}, "Leader / Supervisor": {"Intrapersonal": "Stay clear-headed. Track the room and the decisions being made.", "Interpersonal": "Direct the response. Take over if your staff member is overwhelmed. Make sure no one is left alone.", "Organizational": "Activate the full emergency response. Be in contact with the responders en route. Begin the documentation thread."}}, "resources": [{"name": "Multnomah County Crisis Line", "contact": "503-988-4888 or 1-800-716-9769 (24/7)", "why": "The main number to call instead of 911 for a mental health crisis. Ask for Project Respond by name."}, {"name": "988 Suicide & Crisis Lifeline", "contact": "Call or text 988 (press 2 for Spanish)", "why": "National 24/7 line in many languages. Good for suicidal thoughts or acute crisis."}, {"name": "Washington County Crisis Line", "contact": "503-291-9111 (24/7)", "why": "Same kind of crisis support for people in the western suburbs outside Multnomah County."}, {"name": "Unity Center for Behavioral Health", "contact": "1225 NE 2nd Ave, Portland / 503-944-8000 (24/7)", "why": "Psychiatric emergency room for adults when someone needs a higher level of care than a phone line."}, {"name": "911", "contact": "911", "why": "Life-threatening emergency only. Know the possible consequences for the person in crisis before you call."}]}, {"slug": "recovery", "title": "Recovery", "color": "#1565C0", "emoji": "🔵", "paragraph": "The incident is over. The people are not. Tend to staff and community members one at a time, on their own timeline. Some are ready to talk in an hour, some in a week, some never out loud. Offer more than one door in. Normalize a range of reactions without judgment. Connect people to real supports, not just a flyer. What happens here shapes whether anyone trusts the next response.", "grid": {"Community Member": {"Intrapersonal": "Check on your own body. Sleep, food, breath, slow movement. Do not bypass your own recovery.", "Interpersonal": "Check on the people who were there with you. Offer more than one door in. Do not assume anyone is fine.", "Organizational": "Stay connected to your community. Reach for the warmline or peer support if you need it. Help others find theirs."}, "Staff": {"Intrapersonal": "Use the supports the org provides. EAP, peer support, time off. Do not push through.", "Interpersonal": "Check in individually with people who were present. Ask what they needed and what was missing.", "Organizational": "Document what happened. Follow your org's post-incident procedures. Show up for the debrief."}, "Leader / Supervisor": {"Intrapersonal": "Tend your own recovery openly. Staff watch what leaders do, not what they say.", "Interpersonal": "Reach out to community members involved. Offer a facilitated debrief and connection time.", "Organizational": "Run the team debrief. Connect staff and community members to mental health supports. Hold space for a range of reactions without judgment."}}, "resources": [{"name": "David Romprey Oregon Warmline", "contact": "1-800-698-2392 (24/7)", "why": "Peer-run line for processing without being in active crisis."}, {"name": "Brown Hope Power Hour", "contact": "brownhope.org", "why": "Community and healing from racial trauma. Especially relevant for Black, Brown, and Indigenous staff and community."}, {"name": "NAMI Multnomah", "contact": "namimultnomah.org / 503-228-5692", "why": "Culturally specific support groups and resource lists for ongoing processing."}, {"name": "Your Employee Assistance Program (EAP)", "contact": "Check your org's HR or benefits portal", "why": "Short-term counseling and referral, usually at no cost to the employee."}, {"name": "Cascadia Urgent Walk-In Clinic", "contact": "4212 SE Division St, Portland / 503-238-0737", "why": "Same-day support if processing leads back toward crisis."}]}, {"slug": "mitigation", "title": "Mitigation", "color": "#546E7A", "emoji": "⚪", "paragraph": "Look back to look forward. Name what in the environment, the policies, the relationships, or the unmet needs contributed to what happened. Invite the people most impacted into the room where solutions get named. Update what needs updating. Set a review date. Mitigation is care, not blame. It is the difference between a single hard moment and a pattern that keeps repeating.", "grid": {"Community Member": {"Intrapersonal": "Notice what you learned about your own thresholds. Adjust your practices for next time.", "Interpersonal": "Tell your community what you noticed. The people most impacted often see what others miss.", "Organizational": "Bring what you saw to the org if it is safe to do so. Ask for the changes you want to see."}, "Staff": {"Intrapersonal": "Take what you learned into your own practice. What worked, what did not, what you want to try differently.", "Interpersonal": "Share what you saw with your team. The patterns you notice are part of the data.", "Organizational": "Participate in the systems review. Bring what you saw on the ground to the policy table."}, "Leader / Supervisor": {"Intrapersonal": "Be honest with yourself about your role in what happened and what could shift.", "Interpersonal": "Invite the people most impacted into the room where solutions get named.", "Organizational": "Identify contributing variables: environment, policies, relationships, unmet needs. Update what needs updating. Set a review date. Resource the changes you commit to."}}, "resources": [{"name": "Trauma Informed Oregon: De-escalation training", "contact": "traumainformedoregon.org", "why": "Companion training series for this map. Use it to ground the systems review."}, {"name": "Cultured Care", "contact": "culturedcare.org", "why": "Frameworks and tools for culturally accountable workforce wellbeing and incident review."}, {"name": "Tell us what to add or change", "contact": "info@culturedcare.org", "why": "If you have a resource, a correction, or a pattern you want named, send it. This map is meant to keep moving."}]}]};
+
+const state = {
+  phaseIdx: 0,
+  role: null,  // null = show all roles; otherwise role name
+};
+
+function setPhase(idx) {
+  state.phaseIdx = idx;
+  const phase = DATA.phases[idx];
+  document.documentElement.style.setProperty('--phase', phase.color);
+  document.documentElement.style.setProperty('--phase-soft', hexToRgba(phase.color, 0.08));
+  document.querySelectorAll('#phaseTabs .tab').forEach((t, i) => {
+    t.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+  });
+  document.getElementById('phaseEyebrow').textContent = phaseEyebrow(phase);
+  document.getElementById('phaseTitle').textContent = phase.title;
+  document.getElementById('phaseParagraph').textContent = phase.paragraph;
+  renderGrid();
+  renderResources();
+}
+
+function phaseEyebrow(phase) {
+  const labels = {
+    preparedness: 'Before anything happens',
+    early_response: 'Something is shifting',
+    elevated_response: 'The situation is climbing',
+    critical_response: 'Safety is at stake',
+    recovery: 'After the moment',
+    mitigation: 'Looking back to look forward',
+  };
+  return labels[phase.slug] || '';
+}
+
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0,2),16);
+  const g = parseInt(h.substring(2,4),16);
+  const b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function setRole(role) {
+  state.role = role;
+  document.querySelectorAll('#rolePills .role-pill').forEach(p => {
+    p.setAttribute('aria-pressed', p.dataset.role === (role || '__all__') ? 'true' : 'false');
+  });
+  renderGrid();
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('phaseTabs');
+  tabs.innerHTML = DATA.phases.map((p, i) => `
+    <button class="tab" role="tab" aria-selected="false" data-idx="${i}" style="--tab-color: ${p.color};">
+      <span class="dot"></span>${p.title}
+    </button>
+  `).join('');
+  tabs.addEventListener('click', (e) => {
+    const t = e.target.closest('.tab');
+    if (!t) return;
+    setPhase(parseInt(t.dataset.idx, 10));
+  });
+}
+
+function renderRoles() {
+  const pills = document.getElementById('rolePills');
+  const items = [{label: 'All roles', role: '__all__', cls: 'all'}, ...DATA.roles.map(r => ({label: r, role: r}))];
+  pills.innerHTML = items.map(it => `
+    <button class="role-pill ${it.cls || ''}" data-role="${it.role}" aria-pressed="${it.role === '__all__' ? 'true' : 'false'}">${it.label}</button>
+  `).join('');
+  pills.addEventListener('click', (e) => {
+    const p = e.target.closest('.role-pill');
+    if (!p) return;
+    setRole(p.dataset.role === '__all__' ? null : p.dataset.role);
+  });
+}
+
+function renderGrid() {
+  const phase = DATA.phases[state.phaseIdx];
+  const grid = document.getElementById('grid');
+  const cells = [];
+  // Header row: blank corner + 3 level headers
+  cells.push(`<div class="grid-cell head"></div>`);
+  DATA.levels.forEach(lvl => {
+    cells.push(`<div class="grid-cell head">${lvl}</div>`);
+  });
+  // Role rows
+  DATA.roles.forEach((role, i) => {
+    const dimmed = state.role && state.role !== role ? 'true' : 'false';
+    cells.push(`<div class="grid-row" data-dimmed="${dimmed}">
+      <div class="grid-cell role-head"><span class="num">${i+1}</span>${role}</div>
+      ${DATA.levels.map(lvl => `<div class="grid-cell body" data-level="${lvl} • ${role}">${phase.grid[role][lvl]}</div>`).join('')}
+    </div>`);
+  });
+  grid.innerHTML = cells.join('');
+}
+
+function renderResources() {
+  const phase = DATA.phases[state.phaseIdx];
+  const wrap = document.getElementById('resources');
+  if (!phase.resources.length) {
+    wrap.innerHTML = `<div class="resource" style="grid-template-columns: 1fr;"><div class="why">No external resources for this phase. This phase is about internal practice and systems review.</div></div>`;
+    return;
+  }
+  wrap.innerHTML = phase.resources.map(r => `
+    <div class="resource">
+      <div class="name"><span class="marker"></span>${escapeHtml(r.name)}</div>
+      <div class="contact">${linkify(escapeHtml(r.contact))}</div>
+      <div class="why">${escapeHtml(r.why)}</div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function linkify(s) {
+  // Single pass: match emails, then full phone numbers (with optional 1- prefix), then bare 988.
+  // Using one replace avoids re-matching digits inside the href we just inserted.
+  const linkStyle = 'color:inherit;text-decoration:underline;text-decoration-color:rgba(0,0,0,.25);';
+  // Emails first (longer, more specific) so a phone-like substring inside an email isn't taken.
+  s = s.replace(/([\w.-]+@[\w.-]+\.\w+)/g, (m) =>
+    `<a href="mailto:${m}" style="${linkStyle}">${m}</a>`
+  );
+  // Phone numbers + standalone 988, single alternation
+  s = s.replace(/\b(?:1-\d{3}-\d{3}-\d{4}|\d{3}-\d{3}-\d{4}|988)\b/g, (m) => {
+    const tel = m.replace(/[^\d]/g, '');
+    return `<a href="tel:${tel}" style="${linkStyle}">${m}</a>`;
+  });
+  return s;
+}
+
+// Init
+renderTabs();
+renderRoles();
+setPhase(0);
+
+// Allow phase selection via URL hash
+window.addEventListener('hashchange', loadFromHash);
+function loadFromHash() {
+  const h = location.hash.replace('#', '');
+  const idx = DATA.phases.findIndex(p => p.slug === h);
+  if (idx >= 0) setPhase(idx);
+}
+loadFromHash();
+</script>
+
+</body>
+</html>
